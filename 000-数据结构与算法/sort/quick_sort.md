@@ -10,7 +10,7 @@
 
 ## 分区操作图示
 
-![快排-分区操作](./static/quick_sort.png)
+![快排-分区操作](../static/quick_sort.png)
 
 ## 算法特点
 
