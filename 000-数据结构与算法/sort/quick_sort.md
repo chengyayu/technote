@@ -1,4 +1,4 @@
-# 快速排序
+# 快速排序（Quick Sort）
 
 ## 核心思想
 
@@ -6,16 +6,14 @@
 
 遍历 start 到 end 之间的数据，将小于 pivot 的放到 p 左边，将大于 pivot 的放到 p 右边，将 pivot 放到中间（即 p 对应的位置）。我们将这个步骤叫做“**分区操作**”。
 
-经过分区操作之后，数据序列 `[start,end]` 之间的数据就被分成了三个部分，`[start,p-1]` 之间都是小于 pivot 的，中间是 `pivot`，`[p+1,end]` 之间是大于 pivot 的。依此类推，**递归处理** `[start,p-1]` 与 `[p+1,end]` 两部分，**终止条件**是 `start >= end`。
-
-## 分区操作图示
-
 ![快排-分区操作](../static/quick_sort_patition.webp)
+
+经过分区操作之后，数据序列 `[start,end]` 之间的数据就被分成了三个部分，`[start,p-1]` 之间都是小于 pivot 的，中间是 `pivot`，`[p+1,end]` 之间是大于 pivot 的。依此类推，**递归处理** `[start,p-1]` 与 `[p+1,end]` 两部分，**终止条件**是 `start >= end`。
 
 ## 算法特点
 
-- 时间复杂度：`O(nlgn)`
-- 空间复杂度：`O(nlgn)`
+- 时间复杂度：`O(n*log(n))`
+- 空间复杂度：`O(n*log(n))`
 - 稳定性：`不稳定`
 
 ## 代码实现
@@ -51,3 +49,8 @@ func partition(nums []int, start int, end int) int {
     return i
 }
 ```
+
+## 参考资料
+
+- [https://blog.boot.dev/golang/quick-sort-golang/](https://blog.boot.dev/golang/quick-sort-golang/)
+- [https://time.geekbang.org/column/article/41913](https://time.geekbang.org/column/article/41913)
