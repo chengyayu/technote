@@ -34,7 +34,8 @@ func QuickSort(nums []int, start int, end int) {
 // 分区操作，确定分区点位置
 func partition(nums []int, start int, end int) int {
     pivot := nums[end]
-    // i 预标记 pivot
+    
+    // i 左侧都是小于 pivot 的值
     i := start
     for j := start; j < end; j++ {
         if nums[j] < pivot {
@@ -43,7 +44,7 @@ func partition(nums []int, start int, end int) int {
         }
     }
 
-    // i 位置的值与q位置的值交换
+    // i 与 pivot 交换值
     nums[i], nums[end] = pivot, nums[i]
     
     // 返回 i 作为 pivot 分区位置
