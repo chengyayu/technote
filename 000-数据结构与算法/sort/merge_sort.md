@@ -17,9 +17,11 @@ merge_sort(p…r) = merge(merge_sort(p…q), merge_sort(q+1…r))
 p >= r 不用再继续分解
 ```
 
-## 算法特点
+## 性能评估
 
-- 时间复杂度：`O(n*log(n))`
+- 最坏时间复杂度：`O(n*log(n))`
+- 最好时间复杂度：`O(n*log(n))`
+- 平均时间复杂度：`O(n*log(n))`
 - 空间复杂度：`O(n)`
 - 稳定性：`稳定`
 
