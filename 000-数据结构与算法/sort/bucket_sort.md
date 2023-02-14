@@ -38,7 +38,7 @@ func BucketSort(arr []int, bucketSize int) []int {
     for _, v := range arr {
         idx := (v - min) / bucketSize
         buckets[idx] = append(buckets[idx], v)
-	}
+    }
 
     // 分别排序，合并结果
     sorted := make([]int, 0)
@@ -47,10 +47,10 @@ func BucketSort(arr []int, bucketSize int) []int {
             // 桶内排序算法，此处使用快速排序
             QuickSort(bucket, 0, len(bucket)-1) 
             sorted = append(sorted, bucket...)
-		}
-	}
+        }
+    }
 
-	return sorted
+    return sorted
 }
 ```
 
