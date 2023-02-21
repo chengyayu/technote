@@ -2,16 +2,16 @@
 
 ## 数据结构
 
-1. [概述](./%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%A6%82%E8%BF%B0.md)
-2. [数组](./%E6%95%B0%E7%BB%84.md)
-3. [链表](./%E9%93%BE%E8%A1%A8.md)
-4. [栈](./%E6%A0%88.md)
-5. [队列](./%E9%98%9F%E5%88%97.md)
+1. [概述](./data_struct/overview.md)
+2. [数组](./data_struct/array.md)
+3. [链表](./data_struct/list.md)
+4. [栈](./data_struct/stack.md)
+5. [队列](./data_struct/queue.md)
 
 ## 算法
 
-1. [排序算法](./%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.md)
-2. [哈希算法](./%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95.md)
+1. [排序算法](./algorithm/sorting.md)
+2. [哈希算法](./algorithm/hashing.md)
 
 ## 刷题练习
 
