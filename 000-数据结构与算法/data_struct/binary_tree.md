@@ -58,4 +58,4 @@ inOrder(r) = inOrder(r.left) ->print r -> inOrder(r.right)
 postOrder(r) = postOrder(r.left) -> postOrder(r.right) -> print r
 ```
 
-根据遍历顺序图可以看出来，每个节点最多会被访问两次，所以遍历操作的时间复杂度，跟节点的个数 n 成正比，也就是说二叉树遍历的时间复杂度是 O(n)。
+根据遍历顺序图可以看出来，每个节点最多会被访问两次，所以遍历操作的时间复杂度，跟节点的个数 n 成正比，也就是说二叉树遍历的时间复杂度是 `O(n)`。
