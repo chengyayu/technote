@@ -7,6 +7,13 @@
 3. [链表](./data_struct/list.md)
 4. [栈](./data_struct/stack.md)
 5. [队列](./data_struct/queue.md)
+6. [跳表](./data_struct/skiplist.md)
+7. [散列表](./data_struct/hashtable.md)
+8. [二叉树](./data_struct/binary_tree.md)
+9. [二叉搜索树](./data_struct/binary_search_tree.md)
+10. [红黑树](./data_struct/red_black_tree.md)
+11. [递归树](./data_struct/recursion_tree.md)
+12. [堆](./data_struct/heap.md)
 
 ## 算法
 
