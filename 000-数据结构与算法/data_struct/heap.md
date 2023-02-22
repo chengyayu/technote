@@ -132,6 +132,10 @@ func down(h Interface, i0, n int) bool {
 - 求 TopK 问题（静态数据，动态数据）。
 - 求中位数问题，以及它的变形，比如求 99 百分位数据、90 百分位数据等。
 
+## 参考资料
+
+- [heap, pkg.go.dev](https://pkg.go.dev/container/heap)
+
 ## Leetcode Problems
 - [最小的 K 个数](https://leetcode.cn/problems/zui-xiao-de-kge-shu-lcof/)
 - [数组中的第 K 个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/)

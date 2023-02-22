@@ -39,7 +39,7 @@
         - 希尔排序
     - 选择排序
         - 简单选择排序
-        - 堆排序
+        - [堆排序](./sort/heap_sort.md)
     - 归并排序
         - [二路归并排序](./sort/merge_sort.md)
         - 多路归并排序
@@ -50,7 +50,7 @@
 
 ### 复杂度 
 
-![排序算法时空复杂度](./static/sort_time_space_complexity.png)
+![排序算法时空复杂度](../static/sort_time_space_complexity.png)
 
 ## 参考资料
 
