@@ -7,7 +7,7 @@
 3. [链表](./data_struct/list.md)
 4. [栈](./data_struct/stack.md)
 5. [队列](./data_struct/queue.md)
-6. [跳表](./data_struct/skiplist.md)
+6. [跳表](./data_struct/skip_list.md)
 7. [散列表](./data_struct/hashtable.md)
 8. [二叉树](./data_struct/binary_tree.md)
 9. [二叉搜索树](./data_struct/binary_search_tree.md)
