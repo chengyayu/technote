@@ -18,21 +18,21 @@
 
 ```go
 func heapSort(arr []int) {
-	l := arr
-	h := &hp{sort.IntSlice(l)}
+    l := arr
+    h := &hp{sort.IntSlice(l)}
     // 堆化
-	heap.Init(h)
+    heap.Init(h)
 
     // 排序
-	for {
+    for {
         // 循环终止条件
-		if h.Len() == 1 {
-			return
-		}
+        if h.Len() == 1 {
+            return
+        }
         // 首尾元素交换，对剩余堆向下堆化
         // 此时 Pop 前栈顶元素已经被放置在正确位置
-		_ = heap.Pop(h)
-	}
+        _ = heap.Pop(h)
+    }
 }
 
 // 构建大顶堆
