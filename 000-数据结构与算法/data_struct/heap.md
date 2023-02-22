@@ -138,3 +138,4 @@ func down(h Interface, i0, n int) bool {
 - [前 K 个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/)
 - [数据流中的第 K 大元素](https://leetcode.cn/problems/kth-largest-element-in-a-stream/)
 - [数据流的中位数](https://leetcode.cn/problems/find-median-from-data-stream/)
+- [丑数 2](https://leetcode.cn/problems/ugly-number-ii/submissions/)
