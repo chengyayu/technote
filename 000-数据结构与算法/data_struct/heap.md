@@ -133,7 +133,7 @@ func down(h Interface, i0, n int) bool {
 - 求中位数问题，以及它的变形，比如求 99 百分位数据、90 百分位数据等。
 
 ## Leetcode Problems
-
+- [最小的 K 个数](https://leetcode.cn/problems/zui-xiao-de-kge-shu-lcof/)
 - [数组中的第 K 个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/)
 - [前 K 个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/)
 - [数据流中的第 K 大元素](https://leetcode.cn/problems/kth-largest-element-in-a-stream/)
