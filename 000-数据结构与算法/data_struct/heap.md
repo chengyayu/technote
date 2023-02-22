@@ -125,3 +125,16 @@ func down(h Interface, i0, n int) bool {
 2、元素数量为 n 的堆，将根节点存在数组下标为0的位置，堆（完全二叉树）的最后一个非叶子节点下标为 `n/2 - 1`。
 
 3、堆化过程中只需要保证**非叶子结点**所在槽位放入来正确的值即可，所以需要处理的下标范围为`[0:(n/2-1)]`。
+
+## 堆的应用
+
+- 实现优先级队列。
+- 求 TopK 问题（静态数据，动态数据）。
+- 求中位数问题，以及它的变形，比如求 99 百分位数据、90 百分位数据等。
+
+## Leetcode Problems
+
+- [数组中的第 K 个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/)
+- [前 K 个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/)
+- [数据流中的第 K 大元素](https://leetcode.cn/problems/kth-largest-element-in-a-stream/)
+- [数据流的中位数](https://leetcode.cn/problems/find-median-from-data-stream/)
