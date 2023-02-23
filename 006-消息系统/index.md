@@ -1,5 +1,3 @@
-# Kafka
-
 # 消息系统
 
 ## Kafka
