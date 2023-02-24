@@ -26,6 +26,8 @@
 
 1. [排序算法](./algorithm/sorting.md)
 2. [哈希算法](./algorithm/hashing.md)
+3. 搜索算法
+    - [深度优先与广度优先算法](./algorithm/search/bfs_dfs.md)
 
 ## 刷题练习
 
