@@ -11,9 +11,10 @@
 7. [散列表](./data_struct/hash_table.md)
 8. [二叉树](./data_struct/binary_tree.md)
 9. [二叉查找树](./data_struct/binary_search_tree.md)
-10. [红黑树](./data_struct/red_black_tree.md)
-11. [递归树](./data_struct/recursion_tree.md)
-12. [堆](./data_struct/heap.md)
+10. [B+ 树](./data_struct/b+tree.md)
+11. [红黑树](./data_struct/red_black_tree.md)
+12. [递归树](./data_struct/recursion_tree.md)
+13. [堆](./data_struct/heap.md)
 
 ## 算法
 
