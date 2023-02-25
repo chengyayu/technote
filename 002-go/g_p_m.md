@@ -2,9 +2,9 @@
 
 ## 模型结构
 
-
-
-
+- G（[goroutine](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=407)）
+- P（[processor](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=609)）
+- M（[Machine Thread](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=526)）
 
 ## 调度策略
 
@@ -19,23 +19,6 @@ P 在执行调度时，会按照以下优先级与顺序进行：
 
 ### 1. 从本地队列获取
 
-```go
-// src/runtime/runtime2.go
-
-type p struct {
-    ...
-    // 一个长度为256的循环队列。
-	runqhead uint32
-	runqtail uint32
-	runq     [256]guintptr
-	
-	// 优先与 runq 中的 G 被执行
-    // 可能被其他 P 修改成0，但是只能被当前 P 改成非0。
-	runnext guintptr
-    ...
-}
-```
-
 如果 runnext 不为空则返回对应的 G，如果为空则继续从 P 的本地运行队列 runq 中获取需要执行的 G。因为可能存在其他 P 窃取任务造成的同时访问情况，所以这里的获取操作都需要**加锁**。
 
 [runqget, src/runtime/proc.go](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=6070-6095;bpv=0;bpt=0)
@@ -43,29 +26,6 @@ type p struct {
 ### 2. 从全局队列获取
 
 当 P 每执行61次调度，或者本地队列中不存在可用的 G 时，从全局队列获取一批 G 到本地队列中。
-
-```go
-// src/runtime/runtime2.go
-
-type schedt struct {
-    ...
-    // 全局可执行的 G 队列
-	runq     gQueue
-	runqsize int32
-    ...
-}
-```
-
-```go
-// src/runtime/proc.go
-
-// A gQueue is a dequeue of Gs linked through g.schedlink. 
-// A G can only be on one gQueue or gList at a time.
-type gQueue struct {
-	head guintptr
-	tail guintptr
-}
-```
 
 全局队列的数据结构是一个双端队列。由于多个 P 共享 全局队列，先根据 P 的数量平分全局队列中的 G，同时要转移数量不能超过本地队列容量一半（256/2=128），再通过循环调用 runqput 将全局队列中的 G 放入 P 的本地队列中。如果 P 的本地队列已满，调度器会将本地队列中的一半 G 放入全局队列。
 
@@ -87,4 +47,6 @@ type gQueue struct {
 
 2）再偷 G
 
-找到窃取目标 P1 后，会将 P1 本地队列中的一半 G 放入自己的本地队列中。具体通过 [runqgrab](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=6136-6190;bpv=0;bpt=1)实现。
+找到窃取目标 P1 后，会将 P1 本地队列中的一半 G 放入自己的本地队列中。具体通过 [runqgrab](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=6136-6190;bpv=0;bpt=1) 实现。
+
+## 调度时机
