@@ -2,6 +2,8 @@
 
 ## 模型结构
 
+![go_gpm](./static/go_gpm.png)
+
 - G（[Goroutine](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=407)）
 - P（[Processor](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=609)）
 - M（[Machine Thread](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=526)）
@@ -89,6 +91,10 @@ G 在休眠、channel 阻塞、网络 I/O 阻塞、执行垃圾回收而暂停�
 4. 如果当前 G 需要被唤醒，添加到当前 P 本地队列中。
 
 ### 3. 抢占调度
+
+## 参考资料
+
+- [调度场景过程全解析](https://www.yuque.com/aceld/golang/srxd6d#5c3da99e)
 
 
 
