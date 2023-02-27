@@ -6,6 +6,11 @@
 
 ## 广度优先算法（BFS）
 
+![BFS](../../static/graph_bfs.webp)
+
+- 借助队列来存储每一层的待处理顶点。
+- 借助集合来避免多次处理同一个顶点。
+
 ```go
 func BFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
     startVertex := g.getVertex(start)
@@ -45,6 +50,75 @@ func BFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
 
 ## 深度优先算法（DFS）
 
+![DFS](../../static/graph_dfs.webp)
+
+- 借助栈来存储每一层的待处理顶点。
+- 借助集合来避免多次处理同一个顶点。
+
+非递归写法：
+```go
+func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
+    startVertex := g.getVertex(start)
+    if startVertex == nil {
+        return fmt.Errorf("invalid vertex key : %v", start)
+    }
+
+    stack := []*Vertex{startVertex}
+    visited := make(map[*Vertex]struct{})
+
+    for len(stack) > 0 {
+        curVertex := stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+
+        if _, ok := visited[curVertex]; ok {
+            continue
+        }
+
+        visited[curVertex] = struct{}{}
+        if stop := visit(curVertex); stop {
+            break
+        }
+
+        stack = append(stack, curVertex.adjacent...)
+    }
+
+    return nil
+}
+```
+
+既然深度优先搜索可以借助「栈」实现，那岂不是可以用内置栈即「递归」来实现？
+
+递归写法：
+```go
+var visited = make(map[*Vertex]struct{})
+
+func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
+    startVertex := g.getVertex(start)
+    if startVertex == nil {
+        return fmt.Errorf("invalid vertex key : %v", start)
+    }
+
+    curVertex := startVertex
+    if _, ok := visited[curVertex]; ok {
+        return nil
+    }
+
+    visited[curVertex] = struct{}{}
+    if stop := visit(curVertex); stop {
+        return nil
+    }
+
+    for _, v := range curVertex.adjacent {
+        if _, ok := visited[v]; !ok {
+            if err := DFS(g, v.key, visit); err != nil {
+                return err
+            }
+        }
+    }
+
+    return nil
+}
+```
 
 ## Letcode Problems
 
