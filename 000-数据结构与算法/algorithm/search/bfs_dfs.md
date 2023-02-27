@@ -63,22 +63,28 @@ func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
         return fmt.Errorf("invalid vertex key : %v", start)
     }
 
+    // 初始化栈和已访问集合
     stack := []*Vertex{startVertex}
     visited := make(map[*Vertex]struct{})
 
+    // 循环遍历直到栈为空
     for len(stack) > 0 {
+        // 出栈一个元素
         curVertex := stack[len(stack)-1]
         stack = stack[:len(stack)-1]
 
+        // 已处理过的直接跳过
         if _, ok := visited[curVertex]; ok {
             continue
         }
 
+        // 处理并标记已处理
         visited[curVertex] = struct{}{}
         if stop := visit(curVertex); stop {
             break
         }
 
+        // 下层顶点入栈
         stack = append(stack, curVertex.adjacent...)
     }
 
@@ -124,3 +130,7 @@ func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
 
 - [二叉树的层次遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/#/description)
 - [在每个树行中找最大值](https://leetcode.cn/problems/find-largest-value-in-each-tree-row/)
+
+### 网格类
+
+- [岛屿数量](https://leetcode.cn/problems/number-of-islands/)
