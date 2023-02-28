@@ -92,7 +92,7 @@ func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
 }
 ```
 
-既然深度优先搜索可以借助「栈」实现，那岂不是可以用内置栈即「递归」来实现？
+既然深度优先搜索可以借助「栈」实现，那岂不是可以用语言的内置栈即「递归」来实现？
 
 递归写法：
 ```go
