@@ -6,13 +6,6 @@
 - Pod 里的所有容器，共享的是同一个 Network Namespace，并且可以声明共享同一个 Volume。
 - Pod 里的容器是对等关系，不是拓扑关系。资源的共享通过 Infra 容器关联在一起。
 
-## 基本概念
-
-- 凡是调度、网络、存储，以及安全相关的属性，基本上是 Pod 级别的。
-- NodeSelector：是一个供用户将 Pod 与 Node 进行绑定的字段。
-- HostAliases：定义了 Pod 的 hosts 文件（比如 /etc/hosts）里的内容。
-- TODO ...
-
 ## Pod 对象的生命周期
 
 Pod 生命周期的变化，主要体现在 Pod API 对象的 Status 部分，这是它除了 Metadata 和 Spec 之外的第三个重要字段。其中，pod.status.phase，就是 Pod 的当前状态，它有如下几种可能的情况：
@@ -32,3 +25,63 @@ Pod 生命周期的变化，主要体现在 Pod API 对象的 Status 部分，�
 Pod 当前的 Status 是 Pending，对应的 Condition 是 Unschedulable，这就意味着它的调度出现了问题。
 
 而其中，Ready 这个细分状态非常值得我们关注：它意味着 Pod 不仅已经正常启动（Running 状态），而且已经可以对外提供服务了。
+
+## 常用字段
+
+1、 凡是调度、网络、存储，以及安全相关的属性，基本上是 Pod 级别的。
+
+- NodeSelector：是一个供用户将 Pod 与 Node 进行绑定的字段。
+    ```yaml
+    # 这个 Pod 永远只能运行在携带了“disktype: ssd”标签（Label）的节点上
+    apiVersion: v1
+    kind: Pod
+    ...
+    spec:
+        nodeSelector:
+        disktype: ssd
+    ...
+    ```
+- NodeName：一旦 Pod 的这个字段被赋值，Kubernetes 项目就会被认为这个 Pod 已经经过了调度，调度的结果就是赋值的节点名字。
+- HostAliases：定义了 Pod 的 hosts 文件（比如 /etc/hosts）里的内容。
+    ```go
+    apiVersion: v1
+    kind: Pod
+    ...
+    spec:
+    hostAliases:
+    - ip: "10.1.2.3"
+        hostnames:
+        - "foo.remote"
+        - "bar.remote"
+    ...
+    ```
+    Pod 启动后，/etc/hosts 文件内容如下：
+    ```shell
+    cat /etc/hosts
+    # Kubernetes-managed hosts file.
+    127.0.0.1 localhost
+    ...
+    10.244.135.10 hostaliases-pod
+    10.1.2.3 foo.remote # 看这里
+    10.1.2.3 bar.remote # 看这里
+    ```
+
+2、凡是跟容器的 Linux Namespace 相关的属性，也一定是 Pod 级别的。
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  shareProcessNamespace: true # 这个 Pod 里的容器要共享 PID Namespace
+  containers:
+  - name: nginx
+    image: nginx
+  - name: shell
+    image: busybox
+    stdin: true # 看这里
+    tty: true # 和这里，在 Pod 的 YAML 文件里声明开启它们俩，其实等同于设置了 docker run 里的 -it（-i 即 stdin，-t 即 tty）参数。
+```
+
+3、凡是 Pod 中的容器要共享宿主机的 Namespace，也一定是 Pod 级别的定义。
