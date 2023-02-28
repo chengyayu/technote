@@ -104,16 +104,19 @@ func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
         return fmt.Errorf("invalid vertex key : %v", start)
     }
 
+    // 已处理过的直接跳过
     curVertex := startVertex
     if _, ok := visited[curVertex]; ok {
         return nil
     }
 
+    // 处理并标记已处理
     visited[curVertex] = struct{}{}
     if stop := visit(curVertex); stop {
         return nil
     }
 
+    // 递归处理与当前顶点相连接的其他顶点
     for _, v := range curVertex.adjacent {
         if err := DFS(g, v.key, visit); err != nil {
             return err
