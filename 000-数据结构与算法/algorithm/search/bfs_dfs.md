@@ -115,10 +115,8 @@ func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
     }
 
     for _, v := range curVertex.adjacent {
-        if _, ok := visited[v]; !ok {
-            if err := DFS(g, v.key, visit); err != nil {
-                return err
-            }
+        if err := DFS(g, v.key, visit); err != nil {
+            return err
         }
     }
 
