@@ -12,8 +12,7 @@
 
 > 起初，上帝创造天地。地是空虚混沌，渊面黑暗；神的灵运行在水面上。上帝说：“要有光。”就有了光。
 
-- 一个 Go 进程运行后会先创建 M0 线程，它的目的是用来创建 main 函数所属 G -- G0 。完成任务后 M0 与其他 M 无异。
-- M0 创建的 G0，是一个全局变量。
+- 每个 Go 进程运行后会先创建 M0 线程。
 - 每个 M 都会创建一个自己的 G0。
 - G0 用来调度 G，调度过程中用到了 G0 的栈空间。
 
@@ -122,6 +121,7 @@ G 在休眠、channel 阻塞、网络 I/O 阻塞、执行垃圾回收而暂停�
 ## 参考资料
 
 - [简介G-P-M调度模型](https://mp.weixin.qq.com/s/1CY3E5daJ5U42orVwzCpaw)
+- [深入golang runtime的调度](https://zboya.github.io/post/go_scheduler/#%E6%B7%B1%E5%85%A5golang-runtime%E7%9A%84%E8%B0%83%E5%BA%A6)
 - [调度场景过程全解析](https://www.yuque.com/aceld/golang/srxd6d#5c3da99e)
 
 
