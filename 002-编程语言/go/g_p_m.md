@@ -2,7 +2,7 @@
 
 ## 模型结构
 
-![go_gpm](./static/go_gpm.png)
+![go_gpm](../static/go_gpm.png)
 
 - G（[Goroutine](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=407)）
 - P（[Processor](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=609)）
@@ -14,7 +14,7 @@ g0 -> G -> g0 为一轮调度循环，它与一次上下文切换类似，但是
 
 ### g0 -> G 
 
-1. [schedule](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=3318-3388) 函数处理具体的调度策略，选择下一个要执行的 G。
+1. [schedule](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=3318-3388;drc=ffb07d0c66db2f3f33faedf2927f9aa476d47720) 函数处理具体的调度策略，选择下一个要执行的 G。
 2. [execute](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=2619-2666) 函数执行一些状态转移、G 与 M 之间的绑定等操作。
 3. [gogo]() 函数与操作系统有关，用于完成栈的切换及 CPU 寄存器的恢复。
 
