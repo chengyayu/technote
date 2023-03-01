@@ -17,24 +17,19 @@
 - 每个 M 都会创建一个自己的 G0。
 - G0 用来调度 G，调度过程中用到了 G0 的栈空间。
 
-## 调度循环
+## 调度器的生命周期
 
-g0 -> G -> g0 为一轮调度循环，它与一次上下文切换类似，但是上下文切换关注的是具体的状态，而调度循环关注的是调度流程。
+![调度器生命周期](../static/go_gpm_scheduler_life.png)
 
-### g0 -> G 
+## Goroutine 调度流程
 
-1. [schedule](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=3318-3388;drc=ffb07d0c66db2f3f33faedf2927f9aa476d47720) 函数处理具体的调度策略，选择下一个要执行的 G。
-2. [execute](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=2619-2666) 函数执行一些状态转移、G 与 M 之间的绑定等操作。
-3. [gogo]() 函数与操作系统有关，用于完成栈的切换及 CPU 寄存器的恢复。
+![goroutine 的生命周期](../static/go_func_life.jpeg)
 
-### G -> g0
-
-1. mcall 函数用于保存当前 G 的执行现场，并切换到 g0。
-2. 切换到 g0 后会根据不同的切换原因执行不同的函数
-    - 主动让权：gosched_m
-    - 协程退出：goexit, 并将 G 让入 P 的 freeg 队列
-    - ...
-3. schedule 重新调度
+1. 任意 G 通过 `go func()` 创建 goroutine，优先放入 G 所在 P 的本地队列中。如果本地队列已满，需要执行负载均衡(把 P 中本地队列中前一半的 G，还有新创建 G 转移到全局队列)。
+2. G 只能运行在 M 中，一个 M 必须持有一个 P，M 与 P 是 1：1 的关系。获取 G 的策略看下面**调度策略**。
+3. M 调度 G 执行的过程是一个循环机制，看下面**调度循环**。
+4. 当 M 执行某一个 G 时候如果发生了syscall或则其余阻塞操作，M 会阻塞，如果当前有一些 G 在执行，runtime 会把这个线程 M 从 P 中摘除(detach)，然后再创建一个新的 M(如果有空闲的线程可用就复用空闲线程)来服务于这个 P。
+5. 当 M 阻塞结束，这个 G 会尝试获取一个空闲的 P 执行，优先放入到这个 P 的本地队列。如果获取不到 P（被别的 M 绑定），那么这个线程 M 变成休眠状态，加入到空闲线程中，然后这个 G 会被放入全局队列中。
 
 ## 调度策略
 
@@ -79,6 +74,25 @@ P 在执行调度时，会按照以下优先级与顺序进行：
 
 找到窃取目标 P1 后，会将 P1 本地队列中的一半 G 放入自己的本地队列中。具体通过 [runqgrab](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=6136-6190;bpv=0;bpt=1) 实现。
 
+## 调度循环
+
+g0 -> G -> g0 为一轮调度循环，它与一次上下文切换类似，但是上下文切换关注的是具体的状态，而调度循环关注的是调度流程。
+
+### g0 -> G 
+
+1. [schedule](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=3318-3388;drc=ffb07d0c66db2f3f33faedf2927f9aa476d47720) 函数处理具体的调度策略，选择下一个要执行的 G。
+2. [execute](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=2619-2666) 函数执行一些状态转移、G 与 M 之间的绑定等操作。
+3. [gogo]() 函数与操作系统有关，用于完成栈的切换及 CPU 寄存器的恢复。
+
+### G -> g0
+
+1. mcall 函数用于保存当前 G 的执行现场，并切换到 g0。
+2. 切换到 g0 后会根据不同的切换原因执行不同的函数
+    - 主动让权：gosched_m
+    - 协程退出：goexit, 并将 G 让入 P 的 freeg 队列
+    - ...
+3. schedule 重新调度
+
 ## 调度时机
 
 ### 1. 主动调度
@@ -100,6 +114,10 @@ G 在休眠、channel 阻塞、网络 I/O 阻塞、执行垃圾回收而暂停�
 4. 如果当前 G 需要被唤醒，添加到当前 P 本地队列中。
 
 ### 3. 抢占调度
+
+...
+
+
 
 ## 参考资料
 
