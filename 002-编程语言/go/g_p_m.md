@@ -8,6 +8,14 @@
 - P（[Processor](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=609)）
 - M（[Machine Thread](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=526)）
 
+## M0 与 G0
+
+> 起初，上帝创造天地。地是空虚混沌，渊面黑暗；神的灵运行在水面上。上帝说：“要有光。”就有了光。
+
+- 一个 Go 进程运行后会先创建 M0 线程，它的目的是用来创建 main 函数所属 G 。
+- 准确的说，每个 M 都会创建一个存储在全局的 G0。恰好 M0 创建的 G0 是 main 函数所属的 G。
+- G0 用来获取 G。
+
 ## 调度循环
 
 g0 -> G -> g0 为一轮调度循环，它与一次上下文切换类似，但是上下文切换关注的是具体的状态，而调度循环关注的是调度流程。
