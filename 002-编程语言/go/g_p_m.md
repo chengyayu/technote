@@ -1,4 +1,4 @@
-# G-P-M 模型
+# Goroutine 调度模型
 
 ## 模型结构
 
@@ -94,7 +94,9 @@ G 在休眠、channel 阻塞、网络 I/O 阻塞、执行垃圾回收而暂停�
 
 ## 参考资料
 
+- [简介G-P-M调度模型](https://mp.weixin.qq.com/s/1CY3E5daJ5U42orVwzCpaw)
 - [调度场景过程全解析](https://www.yuque.com/aceld/golang/srxd6d#5c3da99e)
+
 
 
 
