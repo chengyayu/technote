@@ -18,18 +18,18 @@ runtime.rt0_go() 中步骤如下
 
 ### 1. 
 
-初始化 g0 的栈区间，检测 CPU 厂商及型号，按需调用 _cgo_init()，设置和检测 TLS，将 m0 和 g0 互相关联，并将 g0 设置到 TLS 中。
+**初始化 g0 的栈区间**，检测 CPU 厂商及型号，按需调用 _cgo_init()，设置和检测 TLS，**将 m0 和 g0 互相关联**，并将 g0 设置到 TLS 中。
 
 ### 2. runtime.args() ...
 ### 3. runtime.osinit() ...
 
 ### 4. [runtime.schedinit()](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=669-775;bpv=0;bpt=1)
 
-P 已经初始化完毕，还没有创建任何 G，所有 P 的 runq 都是空的。procresize() 函数返回后当前 M 会和第一个 P 关联，也就是 allp[0]。
+**P 已经初始化完毕**，还没有创建任何 G，所有 P 的 runq 都是空的。procresize() 函数返回后**当前 M 会和第一个 P 关联**，也就是 allp[0]。
 
 ### 5. [runtime.newproc()](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=4238-4254;bpv=1;bpt=1)
 
-创建主 goroutine，指定入口函数 runtime.main()，并把它放入 P 的本地队列中。
+**创建主 goroutine**，指定入口函数 runtime.main()，**并把它放入 P 的本地队列中**。
 
 此时 GMP 模型结构如下：
 ```
@@ -40,7 +40,7 @@ G(g0)-M(m0)-P(allp[0])  ... P(allp[n]) ... P(allp[GOMAXPROCS-1])
 
 ### 6. [runtime.mstart()](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=1416-1465;bpv=0;bpt=1)
 
-当前线程进入调度循环。一般情况下线程进入调度循环后不会再返回。进入调度循环的线程会去执行上一步创建的 goroutine。
+**当前线程 M0 进入调度循环**。一般情况下线程进入调度循环后不会再返回。进入调度循环的线程会去**执行上一步创建的 goroutine**。
 
 主 goroutine 得到执行后，runtime.main() 会设置最大栈大小、启动监控线程 sysmon、初始化 runtime 包、开启 GC、最后初始化 mian 包并调用 main.main() 函数。
 
@@ -54,8 +54,8 @@ G(g0)-M(m0)-P(allp[0])  ... P(allp[n]) ... P(allp[GOMAXPROCS-1])
 // One round of scheduler: find a runnable goroutine and execute it.
 // Never returns.
 func schedule() {
-    // 获取当前正在运行的 G，执行 schedule() 函数时一般都是系统栈 g0。
-    // mp 为当前线程 M
+    // 获取当前 G，执行 schedule() 函数时一般都是系统栈 g0。
+    // mp 为当前线程 M。
     mp := getg().m
 
     // 当前 M 持有锁不进行调度
@@ -121,7 +121,7 @@ top:
     if tryWakeP {
         wakep()
     }
-    // 判断 G 是否有绑定的 M，如果有就唤醒 M 来执行 gp
+    // 判断 G 是否有绑定的 M，如果有就唤醒 M 来执行 G
     if gp.lockedm != 0 {
         // Hands off own p to the locked m,
         // then blocks waiting for a new p.
@@ -170,6 +170,7 @@ top:
 
 
     // 一般的 goroutine 切换至就绪状态时会通过 wakep() 函数按需启动新的线程，但是下面的两类不会，所以将 tryWakeP 返回值设置为 true
+    
     // 尝试获取待运行的 Trace Reader
     if trace.enabled || trace.shutdown {
         gp := traceReader()
