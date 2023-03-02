@@ -145,149 +145,149 @@ top:
 // tryWakeP indicates that the returned goroutine is not normal (GC worker, trace
 // reader) so the caller should try to wake a P.
 func findRunnable() (gp *g, inheritTime, tryWakeP bool) {
-	// 获取当前 M
+    // 获取当前 M
     mp := getg().m
 
 top:
     // 获取当前 P
-	pp := mp.p.ptr()
+    pp := mp.p.ptr()
     // 如果处于 gcwaiting 和 runSafePointFn，后续逻辑可能会阻塞
-	if sched.gcwaiting.Load() {
-		gcstopm()
-		goto top
-	}
-	if pp.runSafePointFn != 0 {
-		runSafePointFn()
-	}
+    if sched.gcwaiting.Load() {
+        gcstopm()
+        goto top
+    }
+    if pp.runSafePointFn != 0 {
+        runSafePointFn()
+    }
 
 
     // 运行当前 P 上所有已经达到触发时间的计时器，可能会使一些 goroutine 从 _Gwaiting 变成 _Grunnable 状态
-	// now and pollUntil are saved for work stealing later,
-	// which may steal timers. It's important that between now
-	// and then, nothing blocks, so these numbers remain mostly
-	// relevant.
-	now, pollUntil, _ := checkTimers(pp, 0)
+    // now and pollUntil are saved for work stealing later,
+    // which may steal timers. It's important that between now
+    // and then, nothing blocks, so these numbers remain mostly
+    // relevant.
+    now, pollUntil, _ := checkTimers(pp, 0)
 
 
     // 一般的 goroutine 切换至就绪状态时会通过 wakep() 函数按需启动新的线程，但是下面的两类不会，所以将 tryWakeP 返回值设置为 true
     // 尝试获取待运行的 Trace Reader
-	if trace.enabled || trace.shutdown {
-		gp := traceReader()
-		if gp != nil {
-			casgstatus(gp, _Gwaiting, _Grunnable)
-			traceGoUnpark(gp, 0)
-			return gp, false, true
-		}
-	}
+    if trace.enabled || trace.shutdown {
+        gp := traceReader()
+        if gp != nil {
+            casgstatus(gp, _Gwaiting, _Grunnable)
+            traceGoUnpark(gp, 0)
+            return gp, false, true
+        }
+    }
     // 尝试获取待运行的 GC Worker
-	if gcBlackenEnabled != 0 {
-		gp, tnow := gcController.findRunnableGCWorker(pp, now)
-		if gp != nil {
-			return gp, false, true
-		}
-		now = tnow
-	}
+    if gcBlackenEnabled != 0 {
+        gp, tnow := gcController.findRunnableGCWorker(pp, now)
+        if gp != nil {
+            return gp, false, true
+        }
+        now = tnow
+    }
 
-	// 每调度60次本地 runq，就会调度一次全局 runq
+    // 每调度60次本地 runq，就会调度一次全局 runq
     // 避免 P 上两个互相唤起的 G 导致全局 runq 中的 G 永远不会被调度到。
-	if pp.schedtick%61 == 0 && sched.runqsize > 0 {
-		lock(&sched.lock)
-		gp := globrunqget(pp, 1)
-		unlock(&sched.lock)
-		if gp != nil {
-			return gp, false, false
-		}
-	}
+    if pp.schedtick%61 == 0 && sched.runqsize > 0 {
+        lock(&sched.lock)
+        gp := globrunqget(pp, 1)
+        unlock(&sched.lock)
+        if gp != nil {
+            return gp, false, false
+        }
+    }
 
-	// 判断是否需要唤醒 finalizer G
+    // 判断是否需要唤醒 finalizer G
     // fing 是存储在 runtime 包的一个全局变量，用来参与垃圾回收
-	if fingStatus.Load()&(fingWait|fingWake) == fingWait|fingWake {
-		if gp := wakefing(); gp != nil {
-			ready(gp, 0, true)
-		}
-	}
-	if *cgo_yield != nil {
-		asmcgocall(*cgo_yield, nil)
-	}
+    if fingStatus.Load()&(fingWait|fingWake) == fingWait|fingWake {
+        if gp := wakefing(); gp != nil {
+            ready(gp, 0, true)
+        }
+    }
+    if *cgo_yield != nil {
+        asmcgocall(*cgo_yield, nil)
+    }
 
-	// 从本地 runq 获取 G
-	if gp, inheritTime := runqget(pp); gp != nil {
-		return gp, inheritTime, false
-	}
+    // 从本地 runq 获取 G
+    if gp, inheritTime := runqget(pp); gp != nil {
+        return gp, inheritTime, false
+    }
 
-	// 从全局 runq 获取 G
-	if sched.runqsize != 0 {
-		lock(&sched.lock)
-		gp := globrunqget(pp, 0)
-		unlock(&sched.lock)
-		if gp != nil {
-			return gp, false, false
-		}
-	}
+    // 从全局 runq 获取 G
+    if sched.runqsize != 0 {
+        lock(&sched.lock)
+        gp := globrunqget(pp, 0)
+        unlock(&sched.lock)
+        if gp != nil {
+            return gp, false, false
+        }
+    }
 
-	// 执行一次非阻塞的 netpoll
+    // 执行一次非阻塞的 netpoll
     // 如果返回的列表非空，就把第一个 G 从列表中 pop 出来，修改状态为 _Grunnable
     // 其余的插入全局 runq
     // 返回 G
-	if netpollinited() && netpollWaiters.Load() > 0 && sched.lastpoll.Load() != 0 {
-		if list := netpoll(0); !list.empty() { // non-blocking
-			gp := list.pop()
-			injectglist(&list)
-			casgstatus(gp, _Gwaiting, _Grunnable)
-			if trace.enabled {
-				traceGoUnpark(gp, 0)
-			}
-			return gp, false, false
-		}
-	}
+    if netpollinited() && netpollWaiters.Load() > 0 && sched.lastpoll.Load() != 0 {
+        if list := netpoll(0); !list.empty() { // non-blocking
+            gp := list.pop()
+            injectglist(&list)
+            casgstatus(gp, _Gwaiting, _Grunnable)
+            if trace.enabled {
+                traceGoUnpark(gp, 0)
+            }
+            return gp, false, false
+        }
+    }
 
 
     // 窃取逻辑，特么没看懂！
     // 限制自旋 M 的数量在工作 P 数量的一半
-	// This is necessary to prevent excessive CPU consumption when
-	// GOMAXPROCS>>1 but the program parallelism is low.
-	if mp.spinning || 2*sched.nmspinning.Load() < gomaxprocs-sched.npidle.Load() {
-		if !mp.spinning {
-			mp.becomeSpinning()
-		}
+    // This is necessary to prevent excessive CPU consumption when
+    // GOMAXPROCS>>1 but the program parallelism is low.
+    if mp.spinning || 2*sched.nmspinning.Load() < gomaxprocs-sched.npidle.Load() {
+        if !mp.spinning {
+            mp.becomeSpinning()
+        }
 
         // 窃取逻辑
-		gp, inheritTime, tnow, w, newWork := stealWork(now)
-		if gp != nil {
-			// Successfully stole.
-			return gp, inheritTime, false
-		}
-		if newWork {
-			// There may be new timer or GC work; restart to
-			// discover.
-			goto top
-		}
+        gp, inheritTime, tnow, w, newWork := stealWork(now)
+        if gp != nil {
+            // Successfully stole.
+            return gp, inheritTime, false
+        }
+        if newWork {
+            // There may be new timer or GC work; restart to
+            // discover.
+            goto top
+        }
 
-		now = tnow
-		if w != 0 && (pollUntil == 0 || w < pollUntil) {
-			// Earlier timer to wait for.
-			pollUntil = w
-		}
-	}
+        now = tnow
+        if w != 0 && (pollUntil == 0 || w < pollUntil) {
+            // Earlier timer to wait for.
+            pollUntil = w
+        }
+    }
 
-	// 能走到此处，意味着目前确实没有业务 G 要本运行
-	// 如果处于 GC 标记阶段，当前 M 可以从 gcBgMarkWorkerPool 获取空闲节点中的 G 去协助 GC 标记，而不是放弃 P。
-	if gcBlackenEnabled != 0 && gcMarkWorkAvailable(pp) && gcController.addIdleMarkWorker() {
-		node := (*gcBgMarkWorkerNode)(gcBgMarkWorkerPool.pop())
-		if node != nil {
-			pp.gcMarkWorkerMode = gcMarkWorkerIdleMode
-			gp := node.gp.ptr()
-			casgstatus(gp, _Gwaiting, _Grunnable)
-			if trace.enabled {
-				traceGoUnpark(gp, 0)
-			}
-			return gp, false, false
-		}
-		gcController.removeIdleMarkWorker()
-	}
+    // 能走到此处，意味着目前确实没有业务 G 要本运行
+    // 如果处于 GC 标记阶段，当前 M 可以从 gcBgMarkWorkerPool 获取空闲节点中的 G 去协助 GC 标记，而不是放弃 P。
+    if gcBlackenEnabled != 0 && gcMarkWorkAvailable(pp) && gcController.addIdleMarkWorker() {
+        node := (*gcBgMarkWorkerNode)(gcBgMarkWorkerPool.pop())
+        if node != nil {
+            pp.gcMarkWorkerMode = gcMarkWorkerIdleMode
+            gp := node.gp.ptr()
+            casgstatus(gp, _Gwaiting, _Grunnable)
+            if trace.enabled {
+                traceGoUnpark(gp, 0)
+            }
+            return gp, false, false
+        }
+        gcController.removeIdleMarkWorker()
+    }
 
     // 后面还有逻辑暂且不表
-	......
+    ......
 ```
 
 ### [runtime.stealWork()](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=3021-3094;drc=b35ee3b0467e042621aec9af7f18a2d8c63029ad)
@@ -300,62 +300,62 @@ top:
 // If now is not 0 it is the current time. stealWork returns the passed time or
 // the current time if now was passed as 0.
 func stealWork(now int64) (gp *g, inheritTime bool, rnow, pollUntil int64, newWork bool) {
-	
+    
     // 获取当前 P
     pp := getg().m.p.ptr()
 
-	ranTimer := false
+    ranTimer := false
 
     // 尝试4次窃取
-	const stealTries = 4
-	for i := 0; i < stealTries; i++ {
+    const stealTries = 4
+    for i := 0; i < stealTries; i++ {
         // 一个标记，是否是第四次
-		stealTimersOrRunNextG := i == stealTries-1
+        stealTimersOrRunNextG := i == stealTries-1
 
-		for enum := stealOrder.start(fastrand()); !enum.done(); enum.next() {
+        for enum := stealOrder.start(fastrand()); !enum.done(); enum.next() {
             if sched.gcwaiting.Load() {
-				// GC work may be available.
-				return nil, false, now, pollUntil, true
-			}
+                // GC work may be available.
+                return nil, false, now, pollUntil, true
+            }
             // 从 allp 中随机拿一个 P2
-			p2 := allp[enum.position()]
+            p2 := allp[enum.position()]
             // 如果 P2 与当前 P 相同，跳出，进入下一轮循环
-			if pp == p2 {
-				continue
-			}
+            if pp == p2 {
+                continue
+            }
 
-			// 如果当前是第四次循环，同时 p2 有 timer 到期
-			if stealTimersOrRunNextG && timerpMask.read(enum.position()) {
-				tnow, w, ran := checkTimers(p2, now)
-				now = tnow
-				if w != 0 && (pollUntil == 0 || w < pollUntil) {
-					pollUntil = w
-				}
+            // 如果当前是第四次循环，同时 p2 有 timer 到期
+            if stealTimersOrRunNextG && timerpMask.read(enum.position()) {
+                tnow, w, ran := checkTimers(p2, now)
+                now = tnow
+                if w != 0 && (pollUntil == 0 || w < pollUntil) {
+                    pollUntil = w
+                }
                 // 运行过 timer
-				if ran {
+                if ran {
                     // 运行过计时器可能已经准备好了任意数量的 G，并将它们添加到 P 的本地 runq 中。
                     // 推翻了窃取的前置条件，本地 runq 未必有空间安放偷来的 P
                     // 所以先去从本地 runq 中获取 G
-					if gp, inheritTime := runqget(pp); gp != nil {
-						return gp, inheritTime, now, pollUntil, ranTimer
-					}
-					ranTimer = true
-				}
-			}
+                    if gp, inheritTime := runqget(pp); gp != nil {
+                        return gp, inheritTime, now, pollUntil, ranTimer
+                    }
+                    ranTimer = true
+                }
+            }
 
-			// 如果 P2 空闲状态，别偷，偷不出来
-			if !idlepMask.read(enum.position()) {
-				if gp := runqsteal(pp, p2, stealTimersOrRunNextG); gp != nil {
-					return gp, false, now, pollUntil, ranTimer
-				}
-			}
-		}
-	}
+            // 如果 P2 空闲状态，别偷，偷不出来
+            if !idlepMask.read(enum.position()) {
+                if gp := runqsteal(pp, p2, stealTimersOrRunNextG); gp != nil {
+                    return gp, false, now, pollUntil, ranTimer
+                }
+            }
+        }
+    }
 
-	// No goroutines found to steal. Regardless, running a timer may have
-	// made some goroutine ready that we missed. Indicate the next timer to
-	// wait for.
-	return nil, false, now, pollUntil, ranTimer
+    // No goroutines found to steal. Regardless, running a timer may have
+    // made some goroutine ready that we missed. Indicate the next timer to
+    // wait for.
+    return nil, false, now, pollUntil, ranTimer
 }
 ```
 
