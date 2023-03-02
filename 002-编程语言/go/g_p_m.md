@@ -241,8 +241,6 @@ top:
         }
     }
 
-
-    // 窃取逻辑，特么没看懂！
     // 限制自旋 M 的数量在工作 P 数量的一半
     // This is necessary to prevent excessive CPU consumption when
     // GOMAXPROCS>>1 but the program parallelism is low.
