@@ -252,12 +252,10 @@ top:
         // 窃取逻辑
         gp, inheritTime, tnow, w, newWork := stealWork(now)
         if gp != nil {
-            // Successfully stole.
             return gp, inheritTime, false
         }
         if newWork {
-            // There may be new timer or GC work; restart to
-            // discover.
+            // There may be new timer or GC work; restart to discover.
             goto top
         }
 
