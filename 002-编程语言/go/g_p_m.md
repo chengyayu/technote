@@ -8,18 +8,43 @@
 - P（[Processor](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=609)）
 - M（[Machine Thread](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/runtime2.go;l=526)）
 
-## M0 与 G0
-
-> 起初，上帝创造天地。地是空虚混沌，渊面黑暗；神的灵运行在水面上。上帝说：“要有光。”就有了光。
-
-- 每个 Go 进程运行后会先创建 M0 线程。
-- 每个 M 都会创建一个自己的 G0。
-- G0 用来调度 G，调度过程中用到了 G0 的栈空间。
-- M 需要绑定 P 才能运行 G。sysmon 例外，它是 GM 运行，负责抢占调度。
-
 ## 调度器的生命周期
 
 ![调度器生命周期](../static/go_gpm_scheduler_life.png)
+
+## Go 世界的开始
+
+runtime.rt0_go() 中步骤如下
+
+### 1. 
+
+初始化 g0 的栈区间，检测 CPU 厂商及型号，按需调用 _cgo_init()，设置和检测 TLS，将 m0 和 g0 互相关联，并将 g0 设置到 TLS 中。
+
+### 2. runtime.args() ...
+### 3. runtime.osinit() ...
+
+### 4. [runtime.schedinit()](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=669-775;bpv=0;bpt=1)
+
+P 已经初始化完毕，还没有创建任何 G，所有 P 的 runq 都是空的。procresize() 函数返回后当前线程回和第一个 P 关联，也就是 allp[0]。
+
+### 5. [runtime.newproc()](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=4238-4254;bpv=1;bpt=1)
+
+创建主 goroutine，指定入口函数 runtime.main()，并把它放入 P 的本地队列中。
+
+此时 GMP 模型结构如下：
+```
+G(g0)-M(m0)-P(allp[0])  ... P(allp[n]) ... P(allp[GOMAXPROCS-1])
+            |
+            runq[ G(main goroutine) ]
+```
+
+### 6. [runtime.mstart()](https://cs.opensource.google/go/go/+/refs/tags/go1.20:src/runtime/proc.go;l=1416-1465;bpv=0;bpt=1)
+
+当前线程进入调度循环。一般情况下线程进入调度循环后不会再返回。进入调度循环的线程会去执行上一步创建的 goroutine。
+
+主 goroutine 得到执行后，runtime.main() 会设置最大栈大小、启动监控线程 sysmon、初始化 runtime 包、开启 GC、最后初始化 mian 包并调用 main.main() 函数。
+
+至此，初始化过程完毕。
 
 ## Goroutine 调度流程
 
