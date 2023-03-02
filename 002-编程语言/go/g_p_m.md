@@ -56,84 +56,84 @@ G(g0)-M(m0)-P(allp[0])  ... P(allp[n]) ... P(allp[GOMAXPROCS-1])
 func schedule() {
     // 获取当前正在运行的 G，执行 schedule() 函数时一般都是系统栈 g0。
     // mp 为当前线程 M
-	mp := getg().m
+    mp := getg().m
 
     // 当前 M 持有锁不进行调度
-	if mp.locks != 0 {
-		throw("schedule: holding locks")
-	}
+    if mp.locks != 0 {
+        throw("schedule: holding locks")
+    }
 
     // 当前 M 有没有和 G 绑定，如果有，这个 M 不能用来执行其他 G 了，只能挂起等待与之绑定的 G 得到调度。
-	if mp.lockedg != 0 {
-		stoplockedm()
-		execute(mp.lockedg.ptr(), false) // Never returns.
-	}
+    if mp.lockedg != 0 {
+        stoplockedm()
+        execute(mp.lockedg.ptr(), false) // Never returns.
+    }
 
     // 当前 M 正在执行 cgo 函数调用，不能被调用。
     // 因为 cgo 函数调用占用 g0 栈空间
-	if mp.incgo {
-		throw("schedule: in cgo")
-	}
+    if mp.incgo {
+        throw("schedule: in cgo")
+    }
 
 top:
     // 获取当前 P
-	pp := mp.p.ptr()
+    pp := mp.p.ptr()
     // 标记字段，禁止对 P 的抢占
-	pp.preempt = false
+    pp.preempt = false
 
 
     // 安全检查，如果 MP 自旋状态，runnext 与 本地队列必须为空 
-	// Check this before calling checkTimers, as that might call
-	// goready to put a ready goroutine on the local run queue.
-	if mp.spinning && (pp.runnext != 0 || pp.runqhead != pp.runqtail) {
-		throw("schedule: spinning with local work")
-	}
+    // Check this before calling checkTimers, as that might call
+    // goready to put a ready goroutine on the local run queue.
+    if mp.spinning && (pp.runnext != 0 || pp.runqhead != pp.runqtail) {
+        throw("schedule: spinning with local work")
+    }
 
     // 找到可执行的 G
-	gp, inheritTime, tryWakeP := findRunnable() // blocks until work is available
+    gp, inheritTime, tryWakeP := findRunnable() // blocks until work is available
 
     // 当前 M 即将执行 G，如果此时时自旋状态，需要修改状态。可能会创建一个新的自旋 M
-	if mp.spinning {
-		resetspinning()
-	}
+    if mp.spinning {
+        resetspinning()
+    }
 
     // 判断是否处于禁止调度用户协程的状态
     // 如果是系统协程，可以执行
     // 否则，需要暂存到 disable 队列中，调度逻辑跳转到 top 重新寻找可执行的 G
-	if sched.disable.user && !schedEnabled(gp) {
-		// Scheduling of this goroutine is disabled. Put it on
-		// the list of pending runnable goroutines for when we
-		// re-enable user scheduling and look again.
-		lock(&sched.lock)
-		if schedEnabled(gp) {
-			// Something re-enabled scheduling while we
-			// were acquiring the lock.
-			unlock(&sched.lock)
-		} else {
-			sched.disable.runnable.pushBack(gp)
-			sched.disable.n++
-			unlock(&sched.lock)
-			goto top
-		}
-	}
+    if sched.disable.user && !schedEnabled(gp) {
+        // Scheduling of this goroutine is disabled. Put it on
+        // the list of pending runnable goroutines for when we
+        // re-enable user scheduling and look again.
+        lock(&sched.lock)
+        if schedEnabled(gp) {
+            // Something re-enabled scheduling while we
+            // were acquiring the lock.
+            unlock(&sched.lock)
+        } else {
+            sched.disable.runnable.pushBack(gp)
+            sched.disable.n++
+            unlock(&sched.lock)
+            goto top
+        }
+    }
 
     // 尝试唤醒新的线程，以保证有足够的线程来调度 GCworker 和 tracereader
-	if tryWakeP {
-		wakep()
-	}
+    if tryWakeP {
+        wakep()
+    }
     // 判断 G 是否有绑定的 M，如果有就唤醒 M 来执行 gp
-	if gp.lockedm != 0 {
-		// Hands off own p to the locked m,
-		// then blocks waiting for a new p.
-		startlockedm(gp)
-		goto top
-	}
+    if gp.lockedm != 0 {
+        // Hands off own p to the locked m,
+        // then blocks waiting for a new p.
+        startlockedm(gp)
+        goto top
+    }
 
     // 如果 G 没有绑定 M 通过这个函数来执行。
     // 关联 gp 与 当前 M
     // 将 gp 状态设置为 _Grunning
     // 通过 gogo() 恢复上下文
-	execute(gp, inheritTime)
+    execute(gp, inheritTime)
 }
 ```
 
