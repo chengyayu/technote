@@ -331,15 +331,11 @@ func stealWork(now int64) (gp *g, inheritTime bool, rnow, pollUntil int64, newWo
 				if w != 0 && (pollUntil == 0 || w < pollUntil) {
 					pollUntil = w
 				}
+                // 运行过 timer
 				if ran {
-					// Running the timers may have
-					// made an arbitrary number of G's
-					// ready and added them to this P's
-					// local run queue. That invalidates
-					// the assumption of runqsteal
-					// that it always has room to add
-					// stolen G's. So check now if there
-					// is a local G to run.
+                    // 运行过计时器可能已经准备好了任意数量的 G，并将它们添加到 P 的本地 runq 中。
+                    // 推翻了窃取的前置条件，本地 runq 未必有空间安放偷来的 P
+                    // 所以先去从本地 runq 中获取 G
 					if gp, inheritTime := runqget(pp); gp != nil {
 						return gp, inheritTime, now, pollUntil, ranTimer
 					}
