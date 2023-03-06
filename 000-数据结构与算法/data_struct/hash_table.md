@@ -2,7 +2,7 @@
 
 ## 定义
 
-散列表是一种用来映射**键（Key）**与**值（Value）**的抽象数据结构。它使用**散列函数（Hash function）**计算出的一个**散列值（hash code）**作为**索引**，在存储数据的**桶（buckets）数组**中寻找值。
+散列表是一种用来映射 **键（Key）** 与 **值（Value）** 的抽象数据结构。它使用 **散列函数（Hash function）** 计算出的一个 **散列值（hash code）** 作为 **索引**，在存储数据的 **桶（buckets）数组** 中寻找值。
 
 ![hash_table](../static/hashtable.webp)
 
