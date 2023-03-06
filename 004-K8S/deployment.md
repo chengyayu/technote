@@ -18,24 +18,17 @@ Deployment
             |-Pod
 ```
 
-- ReplicaSet 通过“控制器模式”，保证系统中 Pod 的个数永远等于指定的个数。
-- Deployment 通过“控制器模式”，来操作 ReplicaSet 的个数和属性，进而实现“水平扩展 / 收缩”和“滚动更新”这两个编排动作。
+**ReplicaSet 通过“控制器模式”，保证系统中 Pod 的个数永远等于指定的个数**。
 
-```
-为什么 Deployment 只允许容器的 restartPolicy=Always ？
+为什么 Deployment 只允许容器的 restartPolicy=Always ？只有在容器能保证自己始终是 Running 状态的前提下，ReplicaSet 调整 Pod 的个数才有意义。
 
-只有在容器能保证自己始终是 Running 状态的前提下，ReplicaSet 调整 Pod 的个数才有意义。
+**Deployment 通过“控制器模式”，来操作 ReplicaSet 的个数和属性，进而实现“水平扩展 / 收缩”和“滚动更新”这两个编排动作**。
 
-restartPolicy 表示容器故障后 Kubelet 对容器的重启策略，共有三种：Always、OnFailure 和 Never。
-
-kubectl get pod {pod-name} -o yaml | grep restartPolicy
-```
-
-### 水平伸缩
+## 水平伸缩
 
 Deployment Controller 只需要修改它所控制的 ReplicaSet 的 Pod 副本个数就可以实现水平伸缩。比如，把这个值从 3 改成 4，那么 Deployment 所对应的 ReplicaSet，就会根据修改后的值自动创建一个新的 Pod。这就是“水平扩展”了；“水平收缩”则反之。 
 
-### 滚动更新
+## 滚动更新
 
 对 Deployment 配置信息中应用版本进行升级后，会创建新的 rs ，将一个集群中正在运行的多个 Pod 版本，交替地逐一升级，这个过程就是“滚动更新”。
 
@@ -63,7 +56,7 @@ nginx-deployment-1764197365   3         3         3       6s
 nginx-deployment-3167673210   0         0         0       30s
 ```
 
-#### 回滚
+### 回滚
 
 1、回滚到上个版本
 
@@ -91,7 +84,7 @@ REVISION    CHANGE-CAUSE
 kubectl rollout history deployment/{deployment-name} --revision=2
 ```
 
-### 小结
+## 小结
 
 Deployment 实际上是一个两层控制器。首先，它通过 ReplicaSet 的个数来描述应用的版本；然后，它再通过 ReplicaSet 的属性（比如 `replicas` 的值），来保证 Pod 的副本数量。
 
