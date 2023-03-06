@@ -39,7 +39,7 @@ Deployment Controller 只需要修改它所控制的 ReplicaSet 的 Pod 副本�
 
 对 Deployment 配置信息中应用版本进行升级后，会创建新的 rs ，将一个集群中正在运行的多个 Pod 版本，交替地逐一升级，这个过程就是“滚动更新”。
 
-```
+```shell
 $ kubectl describe deployment nginx-deployment
 ...
 Events:
@@ -52,6 +52,15 @@ Events:
   Normal  ScalingReplicaSet  19s   deployment-controller  Scaled down replica set nginx-deployment-3167673210 to 1
   Normal  ScalingReplicaSet  19s   deployment-controller  Scaled up replica set nginx-deployment-1764197365 to 3
   Normal  ScalingReplicaSet  14s   deployment-controller  Scaled down replica set nginx-deployment-3167673210 to 0
+```
+
+最终，新旧版本的 rs 状态如下：
+
+```shell
+$ kubectl get rs
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-deployment-1764197365   3         3         3       6s
+nginx-deployment-3167673210   0         0         0       30s
 ```
 
 --- 
