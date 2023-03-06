@@ -1,6 +1,6 @@
 # 概览
 
-## 作业副本、水平伸缩、版本控制
+## 水平伸缩、滚动更新
 
 > Deployment 控制 ReplicaSet（应用版本），ReplicaSet 控制 Pod（应用副本数）。
 
@@ -31,19 +31,30 @@ restartPolicy 表示容器故障后 Kubelet 对容器的重启策略，共有三
 kubectl get pod {pod-name} -o yaml | grep restartPolicy
 ```
 
-### 作业副本
-
-ReplicaSet 通过控制器模式和 yaml 文件中指定的 `replicas` 字段来控制 Pod 的数量。每个 Pod 就是一个应用副本。 
-
 ### 水平伸缩
 
+Deployment Controller 只需要修改它所控制的 ReplicaSet 的 Pod 副本个数就可以实现水平伸缩。比如，把这个值从 3 改成 4，那么 Deployment 所对应的 ReplicaSet，就会根据修改后的值自动创建一个新的 Pod。这就是“水平扩展”了；“水平收缩”则反之。 
 
+### 滚动更新
 
-### 版本控制
+对 Deployment 配置信息中应用版本进行升级后，会创建新的 rs ，将一个集群中正在运行的多个 Pod 版本，交替地逐一升级，这个过程就是“滚动更新”。
 
+```
+$ kubectl describe deployment nginx-deployment
+...
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+...
+  Normal  ScalingReplicaSet  24s   deployment-controller  Scaled up replica set nginx-deployment-1764197365 to 1
+  Normal  ScalingReplicaSet  22s   deployment-controller  Scaled down replica set nginx-deployment-3167673210 to 2
+  Normal  ScalingReplicaSet  22s   deployment-controller  Scaled up replica set nginx-deployment-1764197365 to 2
+  Normal  ScalingReplicaSet  19s   deployment-controller  Scaled down replica set nginx-deployment-3167673210 to 1
+  Normal  ScalingReplicaSet  19s   deployment-controller  Scaled up replica set nginx-deployment-1764197365 to 3
+  Normal  ScalingReplicaSet  14s   deployment-controller  Scaled down replica set nginx-deployment-3167673210 to 0
+```
 
-
-
+--- 
 
 Deployment 实际上是一个两层控制器。首先，它通过 ReplicaSet 的个数来描述应用的版本；然后，它再通过 ReplicaSet 的属性（比如 replicas 的值），来保证 Pod 的副本数量。
 
