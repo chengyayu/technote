@@ -63,8 +63,36 @@ nginx-deployment-1764197365   3         3         3       6s
 nginx-deployment-3167673210   0         0         0       30s
 ```
 
---- 
+#### 回滚
 
-Deployment 实际上是一个两层控制器。首先，它通过 ReplicaSet 的个数来描述应用的版本；然后，它再通过 ReplicaSet 的属性（比如 replicas 的值），来保证 Pod 的副本数量。
+1、回滚到上个版本
+
+如果滚动升级过程中，因为容器出现故障，会自动停止。此时如何恢复到之前的状态呢（把旧版本 rs 的 pod 数恢复）？使用以下指令：
+
+```shell
+kubectl rollout undo deployment/{deployment-name}
+```
+2、回滚到某个历史版本
+
+我需要使用 `kubectl rollout history` 命令，查看每次 Deployment 变更对应的版本。
+
+```shell
+$ kubectl rollout history deployment/nginx-deployment
+deployments "nginx-deployment"
+REVISION    CHANGE-CAUSE
+1           kubectl create -f nginx-deployment.yaml --record
+2           kubectl edit deployment/nginx-deployment
+3           kubectl set image deployment/nginx-deployment nginx=nginx:1.91
+```
+
+然后通过下面的指令回到某个具体的历史版本：
+
+```shell
+kubectl rollout history deployment/{deployment-name} --revision=2
+```
+
+### 小结
+
+Deployment 实际上是一个两层控制器。首先，它通过 ReplicaSet 的个数来描述应用的版本；然后，它再通过 ReplicaSet 的属性（比如 `replicas` 的值），来保证 Pod 的副本数量。
 
 Kubernetes 项目对 Deployment 的设计，实际上是代替我们完成了对“应用”的抽象，使得我们可以使用这个 Deployment 对象来描述应用，使用 `kubectl rollout` 命令控制应用的版本。
