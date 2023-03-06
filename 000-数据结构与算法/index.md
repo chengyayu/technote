@@ -28,7 +28,3 @@
 2. [哈希算法](./algorithm/hashing.md)
 3. 搜索算法
     - [深度优先与广度优先算法](./algorithm/search/bfs_dfs.md)
-
-## 刷题练习
-
-1. [基本原则](./%E5%88%B7%E9%A2%98%E5%8E%9F%E5%88%99.md)
