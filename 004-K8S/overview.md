@@ -1,6 +1,6 @@
-# 概览
+# 作业副本的水平伸缩与滚动更新
 
-## 水平伸缩、滚动更新
+## Deployment-RelicaSet-Pod
 
 > Deployment 控制 ReplicaSet（应用版本），ReplicaSet 控制 Pod（应用副本数）。
 
