@@ -135,11 +135,3 @@ func down(h Interface, i0, n int) bool {
 ## 参考资料
 
 - [heap, pkg.go.dev](https://pkg.go.dev/container/heap)
-
-## Leetcode Problems
-- [最小的 K 个数](https://leetcode.cn/problems/zui-xiao-de-kge-shu-lcof/)
-- [数组中的第 K 个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/)
-- [前 K 个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/)
-- [数据流中的第 K 大元素](https://leetcode.cn/problems/kth-largest-element-in-a-stream/)
-- [数据流的中位数](https://leetcode.cn/problems/find-median-from-data-stream/)
-- [丑数 2](https://leetcode.cn/problems/ugly-number-ii/submissions/)
