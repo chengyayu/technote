@@ -66,11 +66,3 @@ panic: runtime error: index out of range [2] with length 2
 | lookup | O(1) |准确的说是根据下标访问元素的时间复杂度为 O(1)|
 | insert | O(n) |低效，涉及元素搬移|
 | delete | O(n) |低效，涉及元素搬移|
-
-## Leetcode Problems
-
-- [移动零](https://leetcode.cn/problems/move-zeroes/)
-- [盛最多水的容器](https://leetcode.cn/problems/container-with-most-water/)
-- [爬楼梯](https://leetcode.cn/problems/climbing-stairs/)
-- [两数之和](https://leetcode.cn/problems/two-sum/)
-- [三数之和](https://leetcode.cn/problems/3sum/)
