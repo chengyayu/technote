@@ -48,19 +48,19 @@ Go 语言 `container/heap` 包中添加元素的实现如下：
 // Push pushes the element x onto the heap.
 // The complexity is O(log n) where n = h.Len().
 func Push(h Interface, x any) {
-	h.Push(x)
-	up(h, h.Len()-1)
+    h.Push(x)
+    up(h, h.Len()-1)
 }
 
 func up(h Interface, j int) {
-	for {
-		i := (j - 1) / 2 // parent
-		if i == j || !h.Less(j, i) {
-			break
-		}
-		h.Swap(i, j)
-		j = i
-	}
+    for {
+        i := (j - 1) / 2 // parent
+        if i == j || !h.Less(j, i) {
+            break
+        }
+        h.Swap(i, j)
+        j = i
+    }
 }
 ```
 
@@ -83,30 +83,30 @@ Go 语言 `container/heap` 包中删除元素的实现如下:
 // The complexity is O(log n) where n = h.Len().
 // Pop is equivalent to Remove(h, 0).
 func Pop(h Interface) any {
-	n := h.Len() - 1
-	h.Swap(0, n)
-	down(h, 0, n)
-	return h.Pop()
+    n := h.Len() - 1
+    h.Swap(0, n)
+    down(h, 0, n)
+    return h.Pop()
 }
 
 func down(h Interface, i0, n int) bool {
-	i := i0
-	for {
-		j1 := 2*i + 1
-		if j1 >= n || j1 < 0 { // j1 < 0 after int overflow
-			break
-		}
-		j := j1 // left child
-		if j2 := j1 + 1; j2 < n && h.Less(j2, j1) {
-			j = j2 // = 2*i + 2  // right child
-		}
-		if !h.Less(j, i) {
-			break
-		}
-		h.Swap(i, j)
-		i = j
-	}
-	return i > i0
+    i := i0
+    for {
+        j1 := 2*i + 1
+        if j1 >= n || j1 < 0 { // j1 < 0 after int overflow
+            break
+        }
+        j := j1 // left child
+        if j2 := j1 + 1; j2 < n && h.Less(j2, j1) {
+            j = j2 // = 2*i + 2  // right child
+        }
+        if !h.Less(j, i) {
+            break
+        }
+        h.Swap(i, j)
+        i = j
+    }
+    return i > i0
 }
 ```
 
@@ -130,7 +130,7 @@ func down(h Interface, i0, n int) bool {
 
 - 实现优先级队列。
 - 求 TopK 问题（静态数据，动态数据）。
-- 求中位数问题，以及它的变形，比如求 99 百分位数据、90 百分位数据等。
+- 求 The Kth 问题，比如求中位数、99百分位数据、90百分位数据等。
 
 ## 参考资料
 
