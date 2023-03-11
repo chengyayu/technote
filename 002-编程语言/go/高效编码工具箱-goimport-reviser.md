@@ -3,7 +3,7 @@
 ### 1、本地安装 `goimports-reviser` (`goimports` 改进版) 
 
 ```go
-go install github.com/incu6us/goimports-reviser/v2@v2.5.1
+go install -v github.com/incu6us/goimports-reviser/v3@latest
 ```
 
 ### 2、配置 `Goland File Watcher` (监控文件保存时触发某种行为)
