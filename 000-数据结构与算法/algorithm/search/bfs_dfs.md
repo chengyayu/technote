@@ -8,7 +8,7 @@
 
 ![BFS](../../static/graph_bfs.webp)
 
-- 借助队列来存储每一层的待处理顶点。
+- 借助**队列**来存储每一层的待处理顶点。
 - 借助集合来避免多次处理同一个顶点。
 
 ```go
@@ -52,10 +52,9 @@ func BFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
 
 ![DFS](../../static/graph_dfs.webp)
 
-- 借助栈来存储每一层的待处理顶点。
+- 借助**栈**来存储每一层的待处理顶点。
 - 借助集合来避免多次处理同一个顶点。
 
-非递归写法：
 ```go
 func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
     startVertex := g.getVertex(start)
@@ -94,7 +93,6 @@ func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
 
 既然深度优先搜索可以借助「栈」实现，那岂不是可以用语言的内置栈即「递归」来实现？
 
-递归写法：
 ```go
 var visited = make(map[*Vertex]struct{})
 
@@ -126,15 +124,3 @@ func DFS(g Graph, start int, visit func(vertex *Vertex) bool) error {
     return nil
 }
 ```
-
-## Letcode Problems
-
-- [二叉树的层次遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/#/description)
-- [在每个树行中找最大值](https://leetcode.cn/problems/find-largest-value-in-each-tree-row/)
-
-### 网格类
-
-- [岛屿数量](https://leetcode.cn/problems/number-of-islands/)
-- [岛屿的最大面积](https://leetcode.cn/problems/max-area-of-island/)
-- [岛屿的周长](https://leetcode.cn/problems/island-perimeter/)
-- [扫雷游戏](https://leetcode.cn/problems/minesweeper/)
