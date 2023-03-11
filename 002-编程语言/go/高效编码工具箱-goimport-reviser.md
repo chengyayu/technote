@@ -1,6 +1,6 @@
 # 针对 goimports 弊端的改进方法
 
-### 1、本地安装 `goimports-reviser` (`goimports` 改进版) 
+### 1、本地安装 [goimports-reviser](https://github.com/incu6us/goimports-reviser) (`goimports` 改进版) 
 
 ```go
 go install -v github.com/incu6us/goimports-reviser/v3@latest
