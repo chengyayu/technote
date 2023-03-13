@@ -21,7 +21,8 @@
 
 ### 高级数据结构
 
-1. [B+ 树](./data_struct/b+tree.md)
+1. [B 树](./data_struct/b_tree.md)
+2. [B+ 树](./data_struct/b+tree.md)
 
 ## 算法
 
