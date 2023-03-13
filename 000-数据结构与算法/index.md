@@ -24,11 +24,14 @@
 
 ## 算法
 
+> 思想无界，算法有界。算法思想是可以体现在任任意算法之中的，算法是作用于具体数据结构之上的。
+
 1. [排序算法](./algorithm/sorting.md)
-2. [查找算法](./algorithm/searching.md)
+2. 查找算法
+   1. [二分查找](./search/binary_search.md)
+   2. [深度优先与广度优先算法](./algorithm/search/bfs_dfs.md)
 3. [哈希算法](./algorithm/hashing.md)
-4. [深度优先与广度优先算法](./algorithm/search/bfs_dfs.md)
-5. 字符串匹配算法
+4. 字符串匹配算法
    1. [BF 算法](./algorithm/string_matching/bf.md)
    2. [RK 算法](./algorithm/string_matching/rk.md)
    3. [BM 算法](./algorithm/string_matching/bm.md)
