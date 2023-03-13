@@ -4,6 +4,7 @@
 
 - [Pod](./pod.md)
 - [Deployment](./deployment.md)
+- [StatefulSet](./statefulset.md)
 
 ## 常用指令
 
