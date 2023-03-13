@@ -96,8 +96,9 @@ func (t *Trie) SearchWord(word string) bool {
 
 查找时间复杂度：O(k)，k 表示要查找的字符串的长度。
 
-空间占用方面，每个节点不论子节点有几个，都需要一个长度为26的数组存储，每个元素至少需要一个 8 字节的指针。当然，也有 Trie 树的变体结构来解决空间占用问题。
+空间占用方面，每个节点不论子节点有几个，都需要一个长度为26的数组存储，每个元素至少需要一个 8 字节的指针。当然，也有 Trie 树的变体结构来解决空间占用问题。比如 Gin 框架中路由组件用到的 Radix Tree。
 
 ## 参考资料
 
 - [Trie 树，数据结构与算法之美](https://time.geekbang.org/column/article/72414)
+- [Radix Tree 与 Gin 实现](https://wingsxdu.com/posts/data-structure/radix-tree/)
