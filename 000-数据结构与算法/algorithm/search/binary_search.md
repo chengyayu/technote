@@ -12,14 +12,14 @@
 ```go
 func search(nums []int, target int) int {
     left, right := 0, len(nums)-1
-    // 1. 退出条件，left == right 是闭区间，还有一个元素，需要和 target 比较
+    // 1. 终止条件（left == right 是闭区间，还有一个元素，需要和 target 比较）
     for left <= right {
-        // 2. mid 取值，防止溢出
+        // 2. 中间值选择（防止溢出）
         mid := left + (right-left)/2
         if nums[mid] == target {
             return mid
         } else if nums[mid] < target {
-            // 3. left right 的更新，防止陷入死循环
+            // 3. 区间边界的更新（防止陷入死循环）
             left = mid + 1
         } else {
             right = mid - 1
