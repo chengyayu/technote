@@ -70,4 +70,4 @@ DaemonSet Controller，首先从 Etcd 里获取所有的 Node 列表，然后遍
 
 ## 参考资料
 
--[容器化守护进程的意义：DaemonSet](https://time.geekbang.org/column/article/41366)
+- [容器化守护进程的意义：DaemonSet](https://time.geekbang.org/column/article/41366)
