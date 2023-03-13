@@ -26,5 +26,9 @@
 
 1. [排序算法](./algorithm/sorting.md)
 2. [哈希算法](./algorithm/hashing.md)
-3. 搜索算法
-    - [深度优先与广度优先算法](./algorithm/search/bfs_dfs.md)
+3. [深度优先与广度优先算法](./algorithm/search/bfs_dfs.md)
+4. 字符串匹配算法
+   1. [BF 算法](./algorithm/string_matching/bf.md)
+   2. [RK 算法](./algorithm/string_matching/rk.md)
+   3. [BM 算法](./algorithm/string_matching/bm.md)
+   4. [KMP 算法](./algorithm/string_matching/kmp.md)
