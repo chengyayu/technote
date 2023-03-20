@@ -104,4 +104,4 @@ mysql> select * from tuser where name like '张%' and age=10 and ismale=1;
 
 ![有索引下推](./static/index_condition_pushdown_2.webp)
 
-而 MySQL5.6 引入的**索引下推**优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。
+而 MySQL5.6 引入的**索引下推优化**（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。
