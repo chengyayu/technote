@@ -165,3 +165,10 @@ func (q *Queue) Peek() any {
     return nil
 }
 ```
+
+## 参考资料
+
+- [Queue, wikipedia.](https://en.wikipedia.org/wiki/Queue_(abstract_data_type))
+- [Circular_buffer, wikipedia.](https://en.wikipedia.org/wiki/Circular_buffer)
+- [Double-ended_queue, wikipedia.](https://en.wikipedia.org/wiki/Double-ended_queue)
+- [Priority_queue, wikipedia.](https://en.wikipedia.org/wiki/Priority_queue)
