@@ -1,21 +1,22 @@
 # 队列
 
-## 定义
+## 队列的定义
 
 ![queue](../static/queue.webp)
 
 队列是一种先进先出（**FIFO**, First-In-First-Out）的线性表。队列支持两个基本操作：
-- **入队**（`enqueue`）：指将数据单元放入队列尾部（`tail`）。
-- **出队**（`dequeue`）：指从队列头部（`head`）取数据单元。
+- **入队**（`enqueue`）：将数据单元放入队列尾部。
+- **出队**（`dequeue`）：从队列头部取出数据单元。
 
 队列的应用非常广泛，特别是一些具有高级特性的特殊队列，如 **循环队列**、**阻塞队列**、**并发队列**，它们在很多偏低层的系统、框架、中间件的开发中，起到关键性作用。
 
-## 顺序队列和链式队列
+## 队列的实现
+
+### 操作接口
 
 ```go
-// Queue 提供的操作接口
 type Q interface {
-Enqueue(any)
+    Enqueue(any)
     Dequeue() any
     IsEmpty() bool
     Reset()
