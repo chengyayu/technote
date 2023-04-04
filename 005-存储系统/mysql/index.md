@@ -11,10 +11,8 @@
   - 范围查询
   - 插入
   - 更新
-- 读写性能，每个 API 的性能如何。
-- 存储介质。
-  - 内存
-  - 外部存储
+- 读写性能，即完成每个 API 的性能如何。
+- 存储介质，即内存、外部存储。
 
 ### [1.哈希表](../../000-数据结构与算法/data_struct/hash_table.md)
 
@@ -33,7 +31,7 @@
 
 ## InnoDB 引擎的索引模型
 
-MySQL 的索引时存储引擎层面实现的，拿 InnoDB 来说，它选择使用 B+ 树来作为索引模型。
+MySQL 的索引时存储引擎层面实现的，拿 InnoDB 来说，它选择使用 B+ 树来作为索引模型。它是在平衡二叉搜索树的基础上，优化而来。
 
 ![index](./static/index.webp)
 
@@ -77,7 +75,7 @@ insert into T values(100,1, 'aa'),(200,2,'bb'),(300,3,'cc'),(500,5,'ee'),(600,6,
    
 其中回到主键索引树上查数据的过程，叫**回表**。
 
-如果执行 ```select ID from T where k between 3 and 5``` 语句，因为二级索引 k 的叶子结点上刚好存储了主键 ID，所以只扫描 k 这颗二级索引树即可，无需回表。这中情况就是**覆盖索引**。
+如果执行 ```select ID from T where k between 3 and 5``` 语句，因为二级索引 k 的叶子结点上刚好存储了主键 ID，所以只扫描 k 这颗二级索引树即可，无需回表。这种情况就是**覆盖索引**。
 
 ### 最左前缀原则
 
@@ -106,4 +104,4 @@ mysql> select * from tuser where name like '张%' and age=10 and ismale=1;
 
 ![有索引下推](./static/index_condition_pushdown_2.webp)
 
-而 MySQL5.6 引入的**索引下推**优化（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。
+而 MySQL5.6 引入的**索引下推优化**（index condition pushdown)，可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。
