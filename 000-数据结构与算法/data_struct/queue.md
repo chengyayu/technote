@@ -12,6 +12,8 @@
 
 ## 队列的实现
 
+根据底层数据容器的数据结构的不同，可以分为**顺序队列**（基于数组的实现）和**链式队列**（基于链表的实现）。
+
 ### 操作接口
 
 ```go
@@ -19,17 +21,13 @@ type Q interface {
     Enqueue(any)
     Dequeue() any
     IsEmpty() bool
-    Reset()
-    Dump() []any
-    Peek() any
 }
 ```
 
 ### 顺序队列
 
-- 内部数据容器依赖 go 的动态数组类型 slice。
+- 底层数据容器基于 go 的动态数组类型 slice。
 - 为了保证线程安全，sync.RWMutex 以嵌入字段的方式组合进 Queue，因为这样调用的时候更舒服。建议：锁谁就放谁上面 ；）
-- Reset() 将数据容器 items 置空。由于 slice 是“零值安全”的，所以重置后的 Queue 依然可以正常使用。
 
 ```go
 // Queue built by slice
@@ -68,42 +66,11 @@ func (q *Queue) IsEmpty() bool {
 
     return len(q.items) == 0
 }
-
-// Reset the container of queue's items
-func (q *Queue) Reset() {
-    q.Lock()
-    defer q.Unlock()
-
-    q.items = nil
-}
-
-// Dump returns all the items in the queue
-func (q *Queue) Dump() []any {
-    q.RLock()
-    defer q.RUnlock()
-
-    var copiedQueue = make([]any, len(q.items))
-    copy(copiedQueue, q.items)
-
-    return copiedQueue
-}
-
-// Peek the head item in the queue
-func (q *Queue) Peek() any {
-    q.RLock()
-    defer q.RUnlock()
-
-    if len(q.items) == 0 {
-        return nil
-    }
-
-    return q.items[0]
-}
 ```
 
 ### 链式队列
 
-- container/list 是 go 提供的一个链表标准库
+- 底层数据容器基于标准库 [container/list](https://pkg.go.dev/container/list) 实现。
 
 ```go
 // Queue built by go std library list
@@ -138,36 +105,6 @@ func (q *Queue) IsEmpty() bool {
     q.RLock()
     defer q.RUnlock()
     return q.items.Len() == 0
-}
-
-// Reset the container of queue's items
-func (q *Queue) Reset() {
-    q.Lock()
-    defer q.Unlock()
-    q.items = list.New()
-}
-
-// Dump returns all the items in the stack
-func (q *Queue) Dump() []any {
-    q.RLock()
-    defer q.RUnlock()
-
-    copiedQueue := make([]any, q.items.Len())
-    for i, e := 0, q.items.Front(); e != nil; e = e.Next() {
-        copiedQueue[i] = e.Value
-        i++
-    }
-    return copiedQueue
-}
-
-// Peek the head item in the queue
-func (q *Queue) Peek() any {
-    q.RLock()
-    defer q.RUnlock()
-    if e := q.items.Front(); e != nil {
-        return e.Value
-    }
-    return nil
 }
 ```
 
