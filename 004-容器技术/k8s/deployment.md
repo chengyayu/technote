@@ -26,7 +26,7 @@ Deployment
 
 ## 水平伸缩
 
-Deployment Controller 只需要修改它所控制的 ReplicaSet 的 Pod 副本个数就可以实现水平伸缩。比如，把这个值从 3 改成 4，那么 Deployment 所对应的 ReplicaSet，就会根据修改后的值自动创建一个新的 Pod。这就是“水平扩展”了；“水平收缩”则反之。 
+Deployment Controller 只需要修改它所控制的 ReplicaSet 的 Pod 副本个数就可以实现水平伸缩。例如，把这个值从 3 改成 4，那么 Deployment 所对应的 ReplicaSet 就会根据修改后的值自动创建一个新的 Pod。这就是“水平扩展”了；“水平收缩”则反之。 
 
 ## 滚动更新
 
