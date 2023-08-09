@@ -66,6 +66,13 @@ To add a worker to this swarm, run the following command:
 This node joined a swarm as a worker.
 ```
 
+### 3.查看集群信息
+
+在任意 manager 节点执行 `docker info` 可查看当前集群信息。
+
+```
+```
+
 
 
 
