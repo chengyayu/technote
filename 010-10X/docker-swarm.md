@@ -16,5 +16,16 @@ docker exec -it $(
 ) etcdctl get config
 ```
 
-### 2. 进入 pg 执行指令
+### 2. 在 pg 节点执行查询指令
+
+```shell
+docker exec -it $(
+  docker inspect $(
+    docker service ps intranet-pg_postgres --no-trunc \
+    --filter="desired-state=running" \
+    --format "{{.ID}}"
+  ) --format "{{.Status.ContainerStatus.ContainerID}}"
+) psql -h 127.0.0.1 -U postgres -d {库名} \
+-c "SELECT * FROM app_locales WHERE id = 11450;"
+```
 
