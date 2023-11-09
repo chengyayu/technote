@@ -1,12 +1,12 @@
 ### 0. 根据{服务名}筛选出运行中的容器信息
 
-```
+```shell
 docker service ps {服务名} --no-trunc --filter="desired-state=running" 
 ```
 
 ### 1. 在 etcd 节点执行查询 key 为 'config' 的值
 
-```
+```shell
 docker exec -it $(
   docker inspect $(
     docker service ps intranet-etcd_node01 --no-trunc \
